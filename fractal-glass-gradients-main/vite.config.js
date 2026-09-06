@@ -6,23 +6,15 @@ import glsl from "vite-plugin-glsl";
 export default {
     root: "src/",
     publicDir: "../public/",
-    base: "/threejs/fractal-glass-gradients/",
+    base: "/",
     plugins: [
-        // Restart server on static/public file change
         restart({ restart: ["../public/**"] }),
-
-        // GLSL support
         glsl(),
-
-        // React support
         react(),
-
-        // .js file support as if it was JSX
         {
             name: "load+transform-js-files-as-jsx",
             async transform(code, id) {
                 if (!id.match(/src\/.*\.js$/)) return null;
-
                 return transformWithEsbuild(code, id, {
                     loader: "jsx",
                     jsx: "automatic",
@@ -31,14 +23,21 @@ export default {
         },
     ],
     server: {
-        host: true, // Open to local network and display URL
-        open: !(
-            "SANDBOX_URL" in process.env || "CODESANDBOX_HOST" in process.env
-        ), // Open if it's not a CodeSandbox
+        host: true,
+        open: !("SANDBOX_URL" in process.env || "CODESANDBOX_HOST" in process.env),
     },
     build: {
-        outDir: "../dist", // Output in the dist/ folder
-        emptyOutDir: true, // Empty the folder first
-        sourcemap: true, // Add sourcemap
+        outDir: "../dist",
+        emptyOutDir: true,
+        sourcemap: true,
+        // FIX: Split Three.js into its own chunk
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    three: ['three'],
+                },
+            },
+        },
+        chunkSizeWarningLimit: 1000, // Increase warning limit to 1000 kB
     },
 };
