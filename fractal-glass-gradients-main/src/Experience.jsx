@@ -1,150 +1,50 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
-import { Perf } from "r3f-perf";
 import vertexShader from "./shaders/vertex.glsl";
 import fragmentShader from "./shaders/fragment.glsl";
 import noiseFragmentShader from "./shaders/noise.glsl";
 
+// Hardcoded values (was previously in Leva controls)
 const PALETTES = {
     "Neon Flux": [
-        [0.02, 0.2, 0.75], // blue
-        [0.8, 0.05, 0.55], // magenta
-        [0.95, 0.1, 0.15], // red
-        [0.97, 0.48, 0.08], // orange
-        [0.2, 0.65, 0.88], // teal/cyan
+        [0.02, 0.2, 0.75],
+        [0.8, 0.05, 0.55],
+        [0.95, 0.1, 0.15],
+        [0.97, 0.48, 0.08],
+        [0.2, 0.65, 0.88],
     ],
     Sunset: [
-        [0.95, 0.25, 0.05], // deep orange
-        [0.85, 0.08, 0.35], // crimson
-        [1.0, 0.6, 0.0], // amber
-        [0.55, 0.05, 0.5], // purple
-        [1.0, 0.85, 0.2], // gold
+        [0.95, 0.25, 0.05],
+        [0.85, 0.08, 0.35],
+        [1.0, 0.6, 0.0],
+        [0.55, 0.05, 0.5],
+        [1.0, 0.85, 0.2],
     ],
     Aurora: [
-        [0.0, 0.75, 0.45], // emerald green
-        [0.05, 0.45, 0.95], // bright blue
-        [0.55, 0.05, 0.85], // violet
-        [0.0, 0.9, 0.7], // cyan-green
-        [0.3, 0.0, 0.65], // deep purple
+        [0.0, 0.75, 0.45],
+        [0.05, 0.45, 0.95],
+        [0.55, 0.05, 0.85],
+        [0.0, 0.9, 0.7],
+        [0.3, 0.0, 0.65],
     ],
 };
 
-const PRESETS = {
-    Balanced: {
-        noiseScaleX: 1.4,
-        noiseScaleY: 1.0,
-        warpStrength: 0.3,
-        algo: "Algo1",
-    },
-    "Flow-like": {
-        noiseScaleX: 0.35,
-        noiseScaleY: 0.55,
-        warpStrength: 0.4,
-        algo: "Algo2",
-    },
-};
+// Hardcoded values (no Leva controls)
+const palette = "Neon Flux";
+const noiseScaleX = 0.35;
+const noiseScaleY = 0.55;
+const warpStrength = 0.4;
+const grainStrength = 0.5;
+const fluteWidth = 70.0;
+const fluteStrength = 140.0;
+const patternBrightness = 0.9;
+const warpSpeed = 0.12;
+const algo = "Algo2";
 
 export default function Experience() {
     const size = useThree((state) => state.size);
     const quadRef = useRef();
-    const [
-        {
-            palette,
-            noiseScaleX,
-            noiseScaleY,
-            warpStrength,
-            grainStrength,
-            fluteWidth,
-            fluteStrength,
-            patternBrightness,
-            warpSpeed,
-            algo,
-            patternPreset,
-        },
-        set,
-    ] = useControls(() => ({
-        patternPreset: {
-            value: "Flow-like",
-            options: ["Balanced", "Flow-like"],
-            label: "Pattern",
-        },
-        palette: {
-            value: "Neon Flux",
-            options: ["Neon Flux", "Sunset", "Aurora"],
-            label: "Palette",
-        },
-        algo: {
-            value: "Algo2",
-            options: ["Algo1", "Algo2"],
-            label: "Algo",
-        },
-        noiseScaleX: {
-            value: 0.35,
-            min: 0.1,
-            max: 5.0,
-            step: 0.05,
-            label: "Noise Scale X",
-        },
-        noiseScaleY: {
-            value: 0.55,
-            min: 0.1,
-            max: 5.0,
-            step: 0.05,
-            label: "Noise Scale Y",
-        },
-        warpStrength: {
-            value: 0.4,
-            min: 0.0,
-            max: 2.0,
-            step: 0.01,
-            label: "Warp Strength",
-        },
-        warpSpeed: {
-            value: 0.12,
-            min: 0.0,
-            max: 1.0,
-            step: 0.01,
-            label: "Warp Speed",
-        },
-        grainStrength: {
-            value: 0.5,
-            min: 0.0,
-            max: 1.0,
-            step: 0.005,
-            label: "Film Grain",
-        },
-        fluteWidth: {
-            value: 70.0,
-            min: 5.0,
-            max: 200.0,
-            step: 1.0,
-            label: "Flute Width",
-        },
-        fluteStrength: {
-            value: 140.0,
-            min: 0.0,
-            max: 200.0,
-            step: 1.0,
-            label: "Flute Refraction",
-        },
-        patternBrightness: {
-            value: 0.9,
-            min: 0.01,
-            max: 2.0,
-            step: 0.01,
-            label: "Brightness",
-        },
-    }));
-
-    useEffect(() => {
-        uniformsRef.current.uPixelRatio.value = window.devicePixelRatio;
-    }, [size]);
-
-    useEffect(() => {
-        set(PRESETS[patternPreset]);
-    }, [patternPreset]);
 
     const noiseSceneRef = useRef(null);
     const noiseCameraRef = useRef(null);
@@ -263,17 +163,13 @@ export default function Experience() {
     });
 
     return (
-        <>
-            <OrbitControls makeDefault />
-            {/* <Perf position="top-left" /> */}
-            <mesh ref={quadRef}>
-                <planeGeometry args={[2, 2, 1, 1]} />
-                <shaderMaterial
-                    vertexShader={vertexShader}
-                    fragmentShader={fragmentShader}
-                    uniforms={uniformsRef.current}
-                />
-            </mesh>
-        </>
+        <mesh ref={quadRef}>
+            <planeGeometry args={[2, 2, 1, 1]} />
+            <shaderMaterial
+                vertexShader={vertexShader}
+                fragmentShader={fragmentShader}
+                uniforms={uniformsRef.current}
+            />
+        </mesh>
     );
 }
