@@ -26,25 +26,7 @@ function App() {
 
             {showOverlay && (
                 <div className="overlay">
-                    <div className="grid-container top-nav">
-                        <div className="col logo">
-                            <svg viewBox="0 0 100 100" fill="currentColor">
-                                <circle
-                                    cx="50"
-                                    cy="50"
-                                    r="40"
-                                    stroke="currentColor"
-                                    strokeWidth="8"
-                                    fill="none"
-                                />
-                                <circle cx="50" cy="50" r="15" />
-                            </svg>
-                        </div>
-                        <div className="col nav-link">About</div>
-                        <div className="col nav-link">Work</div>
-                        <div className="col nav-link">Contact</div>
-                    </div>
-
+                    {/* 👇 NAVBAR REMOVED - ONLY HERO TEXT REMAINS */}
                     <div className="grid-container bottom-content">
                         <h1 className="col-span-2">
                             Fractal
