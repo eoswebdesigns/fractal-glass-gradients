@@ -31,7 +31,7 @@ const PALETTES = {
 };
 
 // Hardcoded values (no Leva controls)
-const palette = "sunset";
+const palette = "Sunset";
 const noiseScaleX = 0.35;
 const noiseScaleY = 0.55;
 const warpStrength = 0.4;
