@@ -3,7 +3,6 @@ import { OrbitControls } from "@react-three/drei";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { Perf } from "r3f-perf";
-import { useControls } from "leva";
 import vertexShader from "./shaders/vertex.glsl";
 import fragmentShader from "./shaders/fragment.glsl";
 import noiseFragmentShader from "./shaders/noise.glsl";
