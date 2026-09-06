@@ -1,5 +1,5 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import vertexShader from "./shaders/vertex.glsl";
 import fragmentShader from "./shaders/fragment.glsl";
@@ -36,7 +36,7 @@ const noiseScaleX = 0.35;
 const noiseScaleY = 0.55;
 const warpStrength = 0.4;
 const grainStrength = 0.5;
-const fluteWidth = 70.0;
+// const fluteWidth = 70.0; // REMOVED – now responsive
 const fluteStrength = 140.0;
 const patternBrightness = 0.9;
 const warpSpeed = 0.12;
@@ -45,6 +45,26 @@ const algo = "Algo2";
 export default function Experience() {
     const size = useThree((state) => state.size);
     const quadRef = useRef();
+
+    // 👇 NEW: Responsive flute width
+    const getFluteWidth = () => {
+        const width = window.innerWidth;
+        if (width < 480) return 30;    // Phones: more flutes
+        if (width < 768) return 45;    // Tablets: medium
+        if (width < 1024) return 55;   // Small laptops
+        return 70;                     // Desktop: original
+    };
+
+    const [fluteWidth, setFluteWidth] = useState(getFluteWidth);
+
+    // 👇 NEW: Update on resize
+    useEffect(() => {
+        const handleResize = () => {
+            setFluteWidth(getFluteWidth());
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const noiseSceneRef = useRef(null);
     const noiseCameraRef = useRef(null);
@@ -116,7 +136,7 @@ export default function Experience() {
             value: new THREE.Vector2(1920, 1260),
         },
         uGrainStrength: { value: 0.05 },
-        uFluteWidth: { value: 50.0 },
+        uFluteWidth: { value: getFluteWidth() }, // 👈 Now responsive
         uFluteStrength: { value: 70.0 },
         uToneMapExposure: { value: 0.1 },
         uC1: { value: new THREE.Vector3(...PALETTES["Neon Flux"][0]) },
@@ -150,7 +170,7 @@ export default function Experience() {
             );
         }
         uniformsRef.current.uGrainStrength.value = grainStrength;
-        uniformsRef.current.uFluteWidth.value = fluteWidth;
+        uniformsRef.current.uFluteWidth.value = fluteWidth; // 👈 Using responsive value
         uniformsRef.current.uFluteStrength.value = fluteStrength;
         uniformsRef.current.uToneMapExposure.value = patternBrightness;
         const pal = PALETTES[palette];
