@@ -49,7 +49,7 @@ export default function Experience() {
     // 👇 NEW: Responsive flute width
     const getFluteWidth = () => {
         const width = window.innerWidth;
-        if (width < 480) return 30;    // Phones: more flutes
+        if (width < 480) return 15;    // Phones: more flutes
         if (width < 768) return 45;    // Tablets: medium
         if (width < 1024) return 55;   // Small laptops
         return 70;                     // Desktop: original
