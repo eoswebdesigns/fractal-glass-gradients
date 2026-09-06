@@ -31,7 +31,7 @@ const PALETTES = {
 };
 
 // Hardcoded values (no Leva controls)
-const palette = "Neon Flux";
+const palette = "sunset";
 const noiseScaleX = 0.35;
 const noiseScaleY = 0.55;
 const warpStrength = 0.4;
@@ -49,7 +49,7 @@ export default function Experience() {
     // 👇 NEW: Responsive flute width
     const getFluteWidth = () => {
         const width = window.innerWidth;
-        if (width < 480) return 15;    // Phones: more flutes
+        if (width < 480) return 45;    // Phones: more flutes
         if (width < 768) return 45;    // Tablets: medium
         if (width < 1024) return 55;   // Small laptops
         return 70;                     // Desktop: original
